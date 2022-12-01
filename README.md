@@ -1,1 +1,3 @@
-# primerjalnik_cen
+# Primerjalnik cen izdelkov
+
+Projekt pri predmetu RSO.

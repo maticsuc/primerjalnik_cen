@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% set active_page = "izdelki" %}
+{% block title %}
+    Izdelki
+{% endblock %}
+{% block content %}
+    <div class="container pt-5">
+        <form method="POST">
+            <h2>Search</h2>
+            <br>
+            {{ form.searched_product(class="form-control", placeholder="Search") }}
+            <br>
+            {{ form.submit(class="btn btn-lg btn-primary") }}
+        </form>
+    </div>
+    {% if products|length > 0 %}
+    <div class="container-fluid pt-5">
+        {% for product in products %}
+            <div class="card bg-dark m-1" style="width: 18rem; display: inline-block;">
+                <div class="card-body">
+                    <img class="card-img-top m-2" src="{{ product.store_img }}" width="20" height="20">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <img class="card-img-custom" src="{{ product.img_link }}">
+                    <h6 class="card-text">{{ product.price }}€</h6>
+                    <a href="{{ product.link }}" target="_blank" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% set active_page = "login" %}
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+<body class="text-center">
+    <div class="container pt-5">
+        <form method="POST" class="form-signin" style="color:white">
+            {{ form.hidden_tag() }}
+            <h1>
+                Login
+            </h1>
+            <br>
+            {{ form.username.label() }}
+            {{ form.username(class="form-control", placeholder="User Name") }}
+            <br>
+            {{ form.password.label() }}
+            {{ form.password(class="form-control", placeholder="Password") }}
+            <br>
+            <div class="checkbox p-3">
+               <h6>Don't have an account?</h6>
+               <a class="btn btn-sm btn-secondary" href="{{ url_for('register_page') }}">Register</a>
+            </div>
+
+            {{ form.submit(class="btn btn-lg btn-primary") }}
+
+        </form>
+    </div>
+</body>
+{% endblock %}
