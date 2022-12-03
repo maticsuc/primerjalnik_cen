@@ -40,5 +40,5 @@ jobs:
         with:
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}//primerjalnik_cen:${{ steps.current-time.outputs.formattedTime }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/primerjalnik_cen:${{ steps.current-time.outputs.formattedTime }}
   
