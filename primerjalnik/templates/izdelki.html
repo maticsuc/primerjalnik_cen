@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
     <div class="container pt-5">
-        <form method="POST">
+        <form action="{{ url_for('izdelki_page') }}" method="POST">
             <h2>Search</h2>
             <br>
             {{ form.searched_product(class="form-control", placeholder="Search") }}

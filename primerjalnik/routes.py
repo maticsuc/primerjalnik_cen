@@ -1,5 +1,5 @@
 from primerjalnik import app, db
-from flask import render_template, redirect, url_for, flash, get_flashed_messages
+from flask import render_template, redirect, url_for, flash, get_flashed_messages, request
 from primerjalnik.models import Item, User
 from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required
@@ -11,12 +11,16 @@ def home_page():
     return render_template('home.html')
 
 @app.route('/izdelki', methods=['GET', 'POST'])
-def izdelki_page():
+@app.route('/izdelki/<searched_product>', methods=['GET', 'POST'])
+def izdelki_page(searched_product=None):
     form = SearchForm()
     products = []
 
-    if form.is_submitted():
+    if request.method == 'POST':
         products = get_products(form.searched_product.data)
+    
+    if request.method == 'GET' and searched_product is not None:
+        products = get_products(searched_product)
 
     return render_template('izdelki.html', form=form, products=products)
 
