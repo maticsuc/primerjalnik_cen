@@ -18,7 +18,7 @@
     </div>
     {% if products|length > 0 %}
     <div class="container-fluid pt-5">
-        {% for product in list(products.values()) %}
+        {% for _, product in products.items() %}
             <div class="card bg-dark m-1" style="width: 18rem; display: inline-block;">
                 <div class="card-body">
                     <img class="card-img-top m-2" src="{{ product.store_img }}" width="20" height="20">

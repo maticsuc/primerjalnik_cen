@@ -11,15 +11,15 @@ def home_page():
     return render_template('home.html')
 
 @app.route('/izdelki', methods=['GET', 'POST'])
-@app.route('/izdelki/<searched_product>', methods=['GET', 'POST'])
-def izdelki_page(searched_product=None):
+def izdelki_page():
     form = SearchForm()
     products = []
 
     if request.method == 'POST':
         products = get_products(form.searched_product.data)
     
-    if request.method == 'GET' and searched_product is not None:
+    if request.method == 'GET' and request.is_json:
+        searched_product = request.json['searched_product']
         products = get_products(searched_product)
         return make_response(jsonify(products), 200)
 
