@@ -29,15 +29,15 @@ def get_products(searched_product):
 
     found_products = soup.find_all("div", {"class":"pbcr"})
 
-    products = []
+    products = dict()
 
-    for product in found_products:
+    for i, product in enumerate(found_products):
         title = product.find("span", {"class":"pbcr__title"}).text.strip()
         price = product.find("span", {"class":"pbcr__price"}).text.strip()[:-2]
         link = urljoin(base_url, product.find("a", {"class":"pbcr__title-wrap pbcr__link"})['href'])
         img_link = urljoin(base_url, product.find("img", {"class":"lazyload gallery-list__image"})['src'])
         
-        products.append({"title": title, "price": price, "link": link, "img_link":img_link, "store_img": img_src})
+        products[str(i)] = {"title": title, "price": price, "link": link, "img_link":img_link, "store_img": img_src}
 
     return products
 

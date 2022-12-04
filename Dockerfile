@@ -10,9 +10,10 @@ RUN pip3 install flask_bcrypt
 RUN pip3 install flask_login
 RUN pip3 install requests
 RUN pip3 install bs4
+RUN pip3 install waitress
 
 WORKDIR /app
 
 COPY . .
 
-CMD ["python3", "run.py"]
+CMD ["waitress-serve", "--listen=*:80", "primerjalnik:app"]

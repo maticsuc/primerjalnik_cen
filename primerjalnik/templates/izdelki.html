@@ -7,6 +7,9 @@
     <div class="container pt-5">
         <form action="{{ url_for('izdelki_page') }}" method="POST">
             <h2>Search</h2>
+            <p>Search products on different web stores.<br>Currently supported web stores:</p>
+            <a href="https://www.mimovrste.com/" target="_blank">mimovrste.com</a>
+            <br>
             <br>
             {{ form.searched_product(class="form-control", placeholder="Search") }}
             <br>
@@ -15,7 +18,7 @@
     </div>
     {% if products|length > 0 %}
     <div class="container-fluid pt-5">
-        {% for product in products %}
+        {% for product in list(products.values()) %}
             <div class="card bg-dark m-1" style="width: 18rem; display: inline-block;">
                 <div class="card-body">
                     <img class="card-img-top m-2" src="{{ product.store_img }}" width="20" height="20">

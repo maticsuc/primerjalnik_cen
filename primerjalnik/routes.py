@@ -1,5 +1,5 @@
 from primerjalnik import app, db
-from flask import render_template, redirect, url_for, flash, get_flashed_messages, request
+from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify, make_response
 from primerjalnik.models import Item, User
 from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required
@@ -21,6 +21,7 @@ def izdelki_page(searched_product=None):
     
     if request.method == 'GET' and searched_product is not None:
         products = get_products(searched_product)
+        return make_response(jsonify(products), 200)
 
     return render_template('izdelki.html', form=form, products=products)
 
