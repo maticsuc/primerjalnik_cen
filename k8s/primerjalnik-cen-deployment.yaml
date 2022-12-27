@@ -16,12 +16,22 @@ spec:
         - image: maticsuc/primerjalnik_cen:2022-12-04-20-39-02
           name: primerjalnik-cen
           env:
-            - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-              value: jdbc:postgresql://fanny.db.elephantsql.com:5432/zqjqqtrd
-            - name: KUMULUZEE_DATASOURCES0_USERNAME
-              value: zqjqqtrd
+            - name: DBHOST
+              value: ella.db.elephantsql.com
+            - name: DBNAME
+              value: rprwteet
+            - name: DBUSER
+              valueFrom:
+                secretKeyRef:
+                  name: db-user-pass
+                  key: username
+            - name: DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: db-user-pass
+                  key: password
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: server
               protocol: TCP
 
@@ -34,7 +44,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 8080
+    - port: 80
       protocol: TCP
       targetPort: server
   selector:

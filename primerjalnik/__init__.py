@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -6,10 +7,10 @@ from flask_login import LoginManager
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
-    dbuser="rprwteet",
-    dbpass="Wqapa0aCg_QCjeUu63qVSMvivgNCCqTR",
-    dbhost="ella.db.elephantsql.com",
-    dbname="rprwteet"
+    dbuser=os.environ["DBUSER"],
+    dbpass=os.environ["DBPASS"],
+    dbhost=os.environ["DBHOST"],
+    dbname=os.environ["DBNAME"]
 )
 
 app.config['SECRET_KEY'] = 'a7e4b0698e212cf43ef30030'
