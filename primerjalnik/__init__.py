@@ -4,8 +4,17 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///market.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
+    dbuser="rprwteet",
+    dbpass="Wqapa0aCg_QCjeUu63qVSMvivgNCCqTR",
+    dbhost="ella.db.elephantsql.com",
+    dbname="rprwteet"
+)
+
 app.config['SECRET_KEY'] = 'a7e4b0698e212cf43ef30030'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)
