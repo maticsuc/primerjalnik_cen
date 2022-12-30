@@ -5,6 +5,8 @@ from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required
 from primerjalnik.scraper import get_products
 
+metrics_data = {'searched_product_count': {}, 'returned_products': 0}
+
 @app.route('/')
 @app.route('/home')
 def home_page():
@@ -17,7 +19,15 @@ def izdelki_page():
 
     if request.method == 'POST':
         products = get_products(form.searched_product.data)
-    
+
+        # Metrics collection
+
+        if form.searched_product.data not in metrics_data['searched_product_count']:
+            metrics_data['searched_product_count'][form.searched_product.data] = 0
+        metrics_data['searched_product_count'][form.searched_product.data] += 1
+
+        metrics_data['returned_products'] += len(products)
+        
     if request.method == 'GET' and request.is_json:
         searched_product = request.json['searched_product']
         products = get_products(searched_product)
@@ -71,3 +81,28 @@ def logout_page():
     logout_user()
     flash("You've logged out.", category='info')
     return redirect(url_for('home_page'))
+
+# Health checks
+# Live
+@app.route('/health/live')
+def health_live():
+    return make_response(jsonify(live=True), 200)
+
+# Ready
+@app.route('/health/ready')
+def health_ready():
+    try:
+        with app.app_context():
+            db.session.execute("SELECT 1")
+
+        return make_response(jsonify(ready=True), 200)
+
+    except Exception as e:
+        print('neki')
+        # 503 - Service unavailable
+        return make_response(jsonify(erros=e), 503)
+
+# Metrics
+@app.route('/metrics')
+def metrics():
+    return make_response(jsonify(metrics_data), 200)
