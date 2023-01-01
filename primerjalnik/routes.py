@@ -1,4 +1,4 @@
-from primerjalnik import app, db
+from primerjalnik import app, db, logger
 from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify, make_response
 from primerjalnik.models import Item, User
 from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
@@ -26,11 +26,24 @@ def izdelki_page():
             metrics_data['searched_product_count'][form.searched_product.data] = 0
         metrics_data['searched_product_count'][form.searched_product.data] += 1
 
+        # Logging
+        logger.info(f"Searched product: {form.searched_product.data}")
+
         metrics_data['returned_products'] += len(products)
         
     if request.method == 'GET' and request.is_json:
         searched_product = request.json['searched_product']
         products = get_products(searched_product)
+
+        # Metrics collection
+
+        if searched_product not in metrics_data['searched_product_count']:
+            metrics_data['searched_product_count'][searched_product] = 0
+        metrics_data['searched_product_count'][searched_product] += 1
+
+        # Logging
+        logger.info(f"Searched product: {form.searched_product.data}")
+
         return make_response(jsonify(products), 200)
 
     return render_template('izdelki.html', form=form, products=products)
@@ -70,6 +83,10 @@ def login_page():
         if attempted_user and attempted_user.check_password(attempted_password=form.password.data):
             login_user(attempted_user)
             flash(message=f"Welcome back {attempted_user.username}!", category='success')
+
+            # Logging
+            logger.info(f"User {attempted_user.username} logged in.")
+
             return redirect(url_for('market_page'))
         else:
             flash("Username and password don't match! Please try again.", category='danger')
@@ -80,6 +97,10 @@ def login_page():
 def logout_page():
     logout_user()
     flash("You've logged out.", category='info')
+
+    # Logging
+    logger.info(f"User logged out.")
+
     return redirect(url_for('home_page'))
 
 # Health checks
