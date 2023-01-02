@@ -13,13 +13,15 @@ spec:
         app: primerjalnik-cen
     spec:
       containers:
-        - image: maticsuc/primerjalnik_cen:2023-01-01-17-11-53
+        - image: maticsuc/primerjalnik_cen:2023-01-02-18-45-32
           name: primerjalnik-cen
           env:
             - name: DBHOST
               value: ella.db.elephantsql.com
             - name: DBNAME
               value: rprwteet
+            - name: CONSUL_HOST
+              value: host.docker.internal
             - name: DBUSER
               valueFrom:
                 secretKeyRef:

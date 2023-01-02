@@ -33,7 +33,10 @@ h.setFormatter(formatter)
 logger = logging.getLogger('waitress')
 logger.addHandler(h)
 
-consul_connection = consul.Consul(host=os.environ["CONSUL_HOST"])
-consul_connection.agent.service.register('primerjalnik', address='http://127.0.0.1', port=5000)
+try:
+    consul_connection = consul.Consul(host=os.environ["CONSUL_HOST"])
+    consul_connection.agent.service.register('primerjalnik', address='http://127.0.0.1', port=5000)
+except:
+    consul_connection = None
 
 from primerjalnik import routes
