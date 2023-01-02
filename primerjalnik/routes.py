@@ -1,38 +1,59 @@
-from primerjalnik import app, db, logger
+import requests
+from primerjalnik import app, db, logger, consul_connection
 from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify, make_response
 from primerjalnik.models import Item, User
 from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
 from flask_login import login_user, logout_user, login_required
 from primerjalnik.scraper import get_products
+from primerjalnik.utils import ProductsOut, LiveOut, ReadyOut, get_info
 
 metrics_data = {'searched_product_count': {}, 'returned_products': 0}
 
 @app.route('/')
 @app.route('/home')
 def home_page():
-    return render_template('home.html')
+
+    try:
+        index, data = consul_connection.kv.get('maintenance')
+        if data['Value'].decode('utf-8') == 'true':
+            return render_template('maintenance.html')
+    except:
+        pass
+
+    cat_fact = str(requests.get('https://catfact.ninja/fact').json()['fact'])
+    btc = dict()
+    btc['eur'] = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json').json()['bpi']['EUR']['rate']
+    btc['usd'] = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json').json()['bpi']['USD']['rate']
+    btc['gbp'] = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json').json()['bpi']['GBP']['rate']
+
+    return render_template('home.html', cat_fact=cat_fact, btc=btc)
+
+@app.route('/products/<searched_product>', methods=['GET'])
+@app.output(ProductsOut(many=True))
+def return_products(searched_product, store):
+    
+    products = get_products(searched_product)
+    
+    # Metrics collection
+
+    if searched_product not in metrics_data['searched_product_count']:
+        metrics_data['searched_product_count'][searched_product] = 0
+    metrics_data['searched_product_count'][searched_product] += 1
+
+    # Logging
+    logger.info(f"Searched product: {searched_product}")
+    
+    return make_response(jsonify(products), 200)
+
 
 @app.route('/izdelki', methods=['GET', 'POST'])
 def izdelki_page():
     form = SearchForm()
     products = []
+    product_info = ""
 
     if request.method == 'POST':
-        products = get_products(form.searched_product.data)
-
-        # Metrics collection
-
-        if form.searched_product.data not in metrics_data['searched_product_count']:
-            metrics_data['searched_product_count'][form.searched_product.data] = 0
-        metrics_data['searched_product_count'][form.searched_product.data] += 1
-
-        # Logging
-        logger.info(f"Searched product: {form.searched_product.data}")
-
-        metrics_data['returned_products'] += len(products)
-        
-    if request.method == 'GET' and request.is_json:
-        searched_product = request.json['searched_product']
+        searched_product = form.searched_product.data
         products = get_products(searched_product)
 
         # Metrics collection
@@ -44,9 +65,11 @@ def izdelki_page():
         # Logging
         logger.info(f"Searched product: {form.searched_product.data}")
 
-        return make_response(jsonify(products), 200)
+        metrics_data['returned_products'] += len(products)
 
-    return render_template('izdelki.html', form=form, products=products)
+        product_info = get_info(searched_product)
+
+    return render_template('izdelki.html', form=form, products=products, product_info=product_info)
 
 @app.route('/market')
 @login_required
@@ -106,11 +129,13 @@ def logout_page():
 # Health checks
 # Live
 @app.route('/health/live')
+@app.output(LiveOut)
 def health_live():
     return make_response(jsonify(live=True), 200)
 
 # Ready
 @app.route('/health/ready')
+@app.output(ReadyOut)
 def health_ready():
     try:
         with app.app_context():
@@ -119,7 +144,6 @@ def health_ready():
         return make_response(jsonify(ready=True), 200)
 
     except Exception as e:
-        print('neki')
         # 503 - Service unavailable
         return make_response(jsonify(erros=e), 503)
 
@@ -127,3 +151,7 @@ def health_ready():
 @app.route('/metrics')
 def metrics():
     return make_response(jsonify(metrics_data), 200)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404

@@ -1,11 +1,11 @@
-import os, logging
-from flask import Flask
+import os, logging, consul
+from apiflask import APIFlask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from primerjalnik.utils import LogHandler
 
-app = Flask(__name__)
+app = APIFlask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
     dbuser=os.environ["DBUSER"],
@@ -33,5 +33,7 @@ h.setFormatter(formatter)
 logger = logging.getLogger('waitress')
 logger.addHandler(h)
 
+consul_connection = consul.Consul(host=os.environ["CONSUL_HOST"])
+consul_connection.agent.service.register('primerjalnik', address='http://127.0.0.1', port=5000)
 
 from primerjalnik import routes

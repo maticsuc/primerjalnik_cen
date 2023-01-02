@@ -13,7 +13,7 @@ spec:
         app: primerjalnik-cen
     spec:
       containers:
-        - image: maticsuc/primerjalnik_cen:2022-12-30-11-05-54
+        - image: maticsuc/primerjalnik_cen:2023-01-01-17-11-53
           name: primerjalnik-cen
           env:
             - name: DBHOST
@@ -30,6 +30,16 @@ spec:
                 secretKeyRef:
                   name: db-user-pass
                   key: password
+            - name: LOGSTASH_IP
+              valueFrom:
+                secretKeyRef:
+                  name: logging-server-ip-port
+                  key: ip
+            - name: LOGSTASH_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: logging-server-ip-port
+                  key: port
           ports:
             - containerPort: 80
               name: server
