@@ -13,7 +13,7 @@ spec:
         app: primerjalnik-cen
     spec:
       containers:
-        - image: maticsuc/primerjalnik_cen:2023-01-02-18-45-32
+        - image: maticsuc/primerjalnik_cen:2023-01-02-18-57-10
           name: primerjalnik-cen
           env:
             - name: DBHOST

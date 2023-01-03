@@ -3,7 +3,7 @@ from primerjalnik import app, db, logger, consul_connection
 from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify, make_response
 from primerjalnik.models import Item, User
 from primerjalnik.forms import RegisterForm, LoginForm, SearchForm
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from primerjalnik.scraper import get_products
 from primerjalnik.utils import ProductsOut, LiveOut, ReadyOut, get_info
 
@@ -30,7 +30,7 @@ def home_page():
 
 @app.route('/products/<searched_product>', methods=['GET'])
 @app.output(ProductsOut(many=True))
-def return_products(searched_product, store):
+def return_products(searched_product, store=None):
     
     products = get_products(searched_product)
     
@@ -45,6 +45,16 @@ def return_products(searched_product, store):
     
     return make_response(jsonify(products), 200)
 
+@app.route('/add/<product>/<price>', methods=['GET'])
+def add(product, price):
+    flash(f"New saved product {product}!", category='info')
+    price = int(float(price.replace(",", ".")))
+    item = Item(name=product[:30], price=price, barcode=product[:12], description=product, owner=current_user.id)
+    with app.app_context():
+        db.session.add(item)
+        db.session.commit()
+        db.session.refresh(item)
+    return redirect(url_for('market_page'))
 
 @app.route('/izdelki', methods=['GET', 'POST'])
 def izdelki_page():

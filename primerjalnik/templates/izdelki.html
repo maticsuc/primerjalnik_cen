@@ -36,6 +36,7 @@
                     <img class="card-img-custom" src="{{ product.img_link }}">
                     <h6 class="card-text">{{ product.price }}€</h6>
                     <a href="{{ product.link }}" target="_blank" class="btn btn-primary">Details</a>
+                    <a href="{{ url_for('add', product=product.title, price=product.price) }}" class="btn btn-primary">Save</a>
                 </div>
             </div>
         {% endfor %}

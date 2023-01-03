@@ -4,37 +4,25 @@
 Market Page
 {% endblock %}
 {% block content %}
-<div class="row">
-   <div class="col-8" style="margin-top:20px">
-    <h2>Available items</h2>
-    <p>Click on one of the items</p>
+   <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-dark" style="color:white">
+    <h2>Saved items</h2>
     <br>
       {% if items|length > 0 %}
       <table class="table table-hover table-dark">
          <thead>
             <tr>
-               <!-- Your Columns HERE -->
-               <th scope="col">ID</th>
                <th scope="col">Name</th>
                <th scope="col">Price</th>
-               <th scope="col">Barcode</th>
-               <th scope="col">Description</th>
-               <th scope="col">Options</th>
+               <th scope="col">Store</th>
             </tr>
          </thead>
          <tbody>
             <!-- Your rows inside the table HERE: -->
             {% for item in items %}
             <tr>
-               <td>{{ item.id }}</td>
-               <td>{{ item.name }}</td>
-               <td>{{ item.price }}$</td>
-               <td>{{ item.barcode }}</td>
                <td>{{ item.description }}</td>
-               <td>
-                  <button class="btn btn-outline btn-info">More Info</button>
-                  <button class="btn btn-outline btn-success">Buy</button>
-               </td>
+               <td>{{ item.price }}€</td>
+               <td><a href="https://www.mimovrste.com/" target="_blank">mimovrste.com</a></td>
             </tr>
             {% endfor %}
          </tbody>
@@ -50,6 +38,4 @@ Market Page
       </div>
       {% endif %}
    </div>
-   <div class="col-4">Owned items</div>
-</div>
 {% endblock %}
